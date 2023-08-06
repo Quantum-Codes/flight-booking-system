@@ -105,6 +105,7 @@ print('''Please choose an appropriate option:
 1.Check available flights
 2.Book a flight
 ''')
-a = input()
+a = int(input())
+
 flight = userinput()
 payment(flight)
