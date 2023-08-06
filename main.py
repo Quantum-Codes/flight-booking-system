@@ -1,3 +1,5 @@
+# AIRLINES. NOT AIRPORT
+
 import mysql.connector, os
 """
 CREATE TABLE flights (
@@ -96,6 +98,9 @@ def payment(flight):
   
   
 
-
+print("""FLIGHT BOOKING SYSTEM""")
+print('-------------------------------------------------------------------------------------------------------------------------------')
+print('''Please choose an appropriate option:
+1.Check availab''')
 flight = userinput()
 payment(flight)
