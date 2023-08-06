@@ -1,4 +1,5 @@
 # AIRLINES. NOT AIRPORT
+#Currently working on: See available flights
 
 import mysql.connector, os
 """
@@ -105,7 +106,9 @@ print('''Please choose an appropriate option:
 1.Check available flights
 2.Book a flight
 ''')
-a = int(input())
-
-flight = userinput()
-payment(flight)
+a = int(input('enter index'))
+if a ==2:
+  flight = userinput()
+  payment(flight)
+elif a==1:
+  
