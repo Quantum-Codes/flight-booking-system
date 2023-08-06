@@ -95,12 +95,16 @@ def payment(flight):
     agree = input('do you agree y/n')
 
   print('Thank You, You may leave this site now.')
+
   
   
 
 print("""FLIGHT BOOKING SYSTEM""")
 print('-------------------------------------------------------------------------------------------------------------------------------')
 print('''Please choose an appropriate option:
-1.Check availab''')
+1.Check available flights
+2.Book a flight
+''')
+a = input()
 flight = userinput()
 payment(flight)
