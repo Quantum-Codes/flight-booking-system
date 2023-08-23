@@ -1,5 +1,4 @@
 # AIRLINES. NOT AIRPORT
-#Currently working on: See available flights (check available flight)
 
 import mysql.connector, os, random
 """
@@ -7,7 +6,9 @@ CREATE TABLE flights (
 id INT NOT NULL UNIQUE,
 from_city TEXT,
 to_city TEXT,
-name varchar(40)
+name varchar(40),
+arrival DATETIME,
+departure DATETIME
 );
 
 
@@ -20,7 +21,7 @@ flightid INT NOT NULL
 
 CREATE TABLE userdata (
 id INT PRIMARY KEY,
-name varchar(50) NOT NULL,
+name varchar(50) UNIQUE NOT NULL,
 age INT UNSIGNED,
 password varchar(50)
 );
@@ -93,9 +94,20 @@ def display_flight(flight):
   Flight ID : {flight[0]}
   Name of flight : {flight[3]}
   From {flight[1]} to {flight[2]}
-  Time of departure : 1 am lololol
-  Time of arrival : 1am in your dreams. YES CHANGE THIS 
+  Time of departure : {flight[5]}
+  Time of arrival : {flight[4]} 
 ---------------------------------------------------------------------------------------------------------------------------------------------''') 
+
+def display_tickets(user):
+  sql.execute("SELECT * FROM booked WHERE userid = %s;", (user,))
+  tickets = sql.fetchall()
+  print("Your booked flights:")
+  if len(tickets) == 0:
+    print("You have not booked any tickets.")
+  for item in tickets:
+    flight = get_flights(flight_id = item[2])
+    print("TicketID", "FlightID", "Plane   ", "Departure \t\t", "Arrival", sep = "\t")
+    print(item[0], flight[0], flight[3], flight[5], flight[4], sep = "\t")
 
 def payment(flight, user):
   os.system("clear")
@@ -120,26 +132,21 @@ def payment(flight, user):
   db.commit()
   print("Payment Successful.")
   print("Ticket id:", ticket_id)
-  display_flight(flight)
 
-def cancel():
-  flightid = input('Flight ID?')
-  sql.execute('DELETE FROM flights WHERE id = %s;',(flightid,))
+
+def cancel(user):
+  flightid = input('Flight ID to cancel: ')
+  sql.execute('DELETE FROM booked WHERE id = %s AND userid = %s;',(flightid, user))
+  db.commit()
   print('Your flight has been successfully cancelled.')
 
-'''CREATE TABLE userdata (
-id INT PRIMARY KEY,
-name varchar(50) NOT NULL,
-age INT UNSIGNED,
-password varchar(50)
-);'''
 
 def signup():
   user_id = generate_id(column = "id", table = "userdata")
   name = input('Please Enter your full name: ').lower()
   age = input('Provide your age: ')
-  pass1 = '1234'
-  pass2 = '9999'
+  pass1 = "a"
+  pass2 = "b"
   while pass1 != pass2:
     pass1 = input('Enter your new password')
     pass2 = input('Confirm your password')
@@ -149,8 +156,8 @@ def signup():
 
 def login():
   username = input('Enter your username: ').lower()
-  input_pass = '1111'
-  password = '2222'
+  input_pass = 'a'
+  password = 'b'
   while password!= input_pass:
     input_pass = input('Enter your password: ')
     sql.execute('SELECT id, password FROM userdata WHERE name = %s',(username,))
@@ -212,5 +219,7 @@ while a != 5:
     payment(flight, user)
   
   elif a == 3:
-    flightID = int(input("Enter flight id: ")) #change to ticketid and then get flightid for ticket
-    display_flight(get_flights(flight_id = flightID))
+    display_tickets(user)
+
+  elif a == 4:
+    cancel(user)
