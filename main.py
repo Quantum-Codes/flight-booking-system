@@ -33,7 +33,7 @@ db = mysql.connector.connect(
   user = os.environ["db_user"],
   password = os.environ["db_pass"],
   database = "testdb",
-  autocommit = True
+  autocommit = True  # fix planetscale bug
 )
 sql = db.cursor()
 """
