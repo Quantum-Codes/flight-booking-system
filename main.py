@@ -32,9 +32,22 @@ db = mysql.connector.connect(
   host = os.environ["db_host"],
   user = os.environ["db_user"],
   password = os.environ["db_pass"],
-  database = "testdb"
+  database = "testdb",
+  autocommit = True
 )
 sql = db.cursor()
+"""
+import time
+print("started")
+#sql.execute("UPDATE flights SET from_city = 'lol' WHERE from_city = 'lop';")
+sql.execute("SELECT * FROM flights;")
+#db.commit()
+x=sql.fetchall()
+time.sleep(21)
+sql.execute("SELECT id FROM flights;")
+#x=sql.fetchall()
+print("No errors ")
+exit()#"""
 
 def get_flights(from_city = None, to_city = None, flight_id = None):
   #priority to arguments: flight_id > to_city > from_city
@@ -73,17 +86,17 @@ def userinput():
   from_options = get_flights()
   for item in from_options:
     print('>> ',item[0].title())
-  home = input('Enter your city: ')
+  home = input('Enter your city: ').lower().strip()
   print("\n")
   print('Here are all the destinations connected to your location: ')
   to_options = get_flights(from_city = home)
   for item in to_options:
     print('>> ',item[0].title())
-  dest = input('Enter your desired destination: ')
+  dest = input('Enter your desired destination: ').lower().strip()
   print(f"All flights travelling to {dest} from {home}:")
   print(get_flights(to_city = dest, from_city = home))
   print()
-  flightID = int(input('Please select the flight id of the plane you want to board in: '))
+  flightID = int(input('Please select the flight id of the plane you want to board in: ').strip())
   
   flight_data = get_flights(flight_id = flightID)
   return flight_data #tuple
@@ -114,7 +127,9 @@ def payment(flight, user):
   print('Please confirm all details.')
   print()
   display_flight(flight)#TO DO AFTERWARDS
-  confirm = input('')
+  confirm = input('Confirm?(y/n): ').strip().lower()
+  if confirm not in ("yes", "y"): # rejected. so cancel booking process 
+    return
   print('''\n
   Select mode of payment
   1. Debit Card''')
@@ -135,7 +150,7 @@ def payment(flight, user):
 
 
 def cancel(user):
-  flightid = input('Flight ID to cancel: ')
+  flightid = input('Flight ID to cancel: ').strip()
   sql.execute('DELETE FROM booked WHERE id = %s AND userid = %s;',(flightid, user))
   db.commit()
   print('Your flight has been successfully cancelled.')
@@ -148,21 +163,23 @@ def signup():
   pass1 = "a"
   pass2 = "b"
   while pass1 != pass2:
-    pass1 = input('Enter your new password')
-    pass2 = input('Confirm your password')
+    pass1 = input('Enter your new password').strip()
+    pass2 = input('Confirm your password').strip()
   sql.execute('INSERT INTO userdata (id,name,age,password) VALUES (%s,%s,%s,%s);',(user_id, name, age, pass1))
   db.commit()
   return user_id
 
 def login():
   username = input('Enter your username: ').lower()
-  input_pass = 'a'
-  password = 'b'
+  sql.execute('SELECT id, password FROM userdata WHERE name = %s',(username,))
+  user = sql.fetchone()
+  if user is None:
+    print("No such user exists. Signup if you don't have an account.")
+    return 
+  input_pass = None
+  password = user[1]
   while password!= input_pass:
-    input_pass = input('Enter your password: ')
-    sql.execute('SELECT id, password FROM userdata WHERE name = %s',(username,))
-    user = sql.fetchone()
-    password = user[1]
+    input_pass = input('Enter your password: ').strip()
     if password != input_pass:
       print('Incorrect Password. Please try again.')
 
