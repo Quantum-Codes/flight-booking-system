@@ -1,7 +1,11 @@
 # AIRLINES. NOT AIRPORT
+#END DATABASE MUST HAVE EVERYTHING IN LOWER CASE
 
 import mysql.connector, os, random
 """
+Setup SQL queries:
+
+
 CREATE TABLE flights (
 id INT NOT NULL UNIQUE,
 from_city TEXT,
@@ -26,7 +30,6 @@ age INT UNSIGNED,
 password varchar(50)
 );
 """
-#END DATABASE MUST HAVE EVERYTHING IN LOWER CASE
 
 db = mysql.connector.connect(
   host = os.environ["db_host"],
@@ -159,7 +162,14 @@ def cancel(user):
 def signup():
   user_id = generate_id(column = "id", table = "userdata")
   name = input('Please Enter your full name: ').lower()
+  sql.execute('SELECT name FROM userdata;')
+  check = [item[0] for item in sql.fetchall()]
+  if name in check:
+    print('User already exists')
+    return 
   age = input('Provide your age: ')
+  if not age.isdigit() and int(age) < 0:
+    return
   pass1 = "a"
   pass2 = "b"
   while pass1 != pass2:
@@ -240,3 +250,6 @@ while a != 5:
 
   elif a == 4:
     cancel(user)
+  else:
+    print("Exiting program.")
+    break
