@@ -84,25 +84,61 @@ def generate_id(column = None, table = None):
   return temp_id 
 
 
+  
 def userinput():
-  print("Cities we fly from:")
+  print("Cities we connect:")
   from_options = get_flights()
   for item in from_options:
     print('>> ',item[0].title())
   home = input('Enter your city: ').lower().strip()
+  dest = input('Enter your desired destination: ').lower().strip()
+  #CHECK THIS PIECE OF ...... CODE!
+  journey = []
+  if get_flights(from_city = home, to_city=dest):
+    available = get_flights(from_city = home)
+    for i in available[1]:
+      central = sql.execute('SELECT * FROM flights WHERE from_city = %s AND arrival < %s;',(home,available[5]))
+      for i in central[1]:
+        final = sql.execute('SELECT * FROM flights WHERE from city=%s AND arrival < %s;',(central[1],central[5]))
+        if final:
+          pass
+        else:
+          for i in final[0]:
+            journey.append([available[0][available[1].index(i),central[0][central[1].index(i),i]) #[flight id of  flight]
+  else:
+    journey = get_flights(from_city = home, to_city=dest)
+  #CHECK ABOVE CODE
+  for item in journey:
+    print('>>', get_flights(flight_id = journey[0])[0])
+    print('  ', get_flights(flight_id = journey[0])[0])
+    print('  ', get_flights(flight_id = journey[0])[0])
+  print()
+  
+  flightID = int(input('Through which location do you want to reach your desired destination? ').strip())
+
+  #IN PROGRESS BELOW 2 LINES OF CODE
+  flight_data = get_flights(flight_id = flightID)
+  return flight_data
+    
+                    
+
+    
+
+
+  
+  '''print(f"All flights travelling to {dest} from {home}:")
+  print(get_flights(to_city = dest, from_city = home))
   print("\n")
   print('Here are all the destinations connected to your location: ')
   to_options = get_flights(from_city = home)
   for item in to_options:
     print('>> ',item[0].title())
-  dest = input('Enter your desired destination: ').lower().strip()
-  print(f"All flights travelling to {dest} from {home}:")
-  print(get_flights(to_city = dest, from_city = home))
+
   print()
   flightID = int(input('Please select the flight id of the plane you want to board in: ').strip())
   
   flight_data = get_flights(flight_id = flightID)
-  return flight_data #tuple
+  return flight_data #tuple'''
 
 def display_flight(flight):
   print(f'''
