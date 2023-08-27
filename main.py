@@ -81,7 +81,7 @@ def generate_id(column = None, table = None):
       temp_id = random.randint(0,1E10)
     else:
       break
-  return temp_id
+  return temp_id 
 
 
 def userinput():
