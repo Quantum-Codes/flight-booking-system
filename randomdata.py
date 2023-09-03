@@ -36,5 +36,5 @@ while True:
     x = time.hour
     sql.execute("INSERT INTO flights VALUES (%s, %s, %s, 'placehold', %s, %s);", (generate_id(), from_city, to_city, str_arrive_time, str_depart_time))
 
-    time += datetime.timedelta(hours = random.choice([0.5,1])) # flight refuelling time
+    time += datetime.timedelta(hours = random.choice([(timewait/2),(timewait/2)+0.5])) # flight refuelling time
     from_city, to_city = to_city, from_city # update plane location
