@@ -1,6 +1,6 @@
 # AIRLINES. NOT AIRPORT
 #TEST HYDERABAD TO PARIS! (hop flight). Direct flight booking works in the 1 tested case.
-#FIX DATA LOADER in main.py. DATA DOWNLOADER WORKS in data_dumper.py
+
 import mysql.connector, os, random, pickle
 
 
@@ -15,28 +15,41 @@ def setup():
   sql.execute("CREATE DATABASE IF NOT EXISTS airline_db;")
   sql.execute("USE airline_db;")
   sql.execute("CREATE TABLE IF NOT EXISTS flights (id INT NOT NULL UNIQUE, from_city TEXT, to_city TEXT,\
-name varchar(40), arrival DATETIME, departure DATETIME);")
+name varchar(40), arrival TIME, departure TIME);")
   sql.execute("CREATE TABLE IF NOT EXISTS booked (id INT UNSIGNED PRIMARY KEY, userid INT NOT NULL, flightid INT NOT NULL);")
   sql.execute("CREATE TABLE IF NOT EXISTS userdata (id INT PRIMARY KEY, name varchar(50) UNIQUE NOT NULL,\
 age INT UNSIGNED, password varchar(50));")
   db.commit()
   print("Setup db structure.")
 
-
+  sql.execute("SELECT * FROM flights;")
+  if sql.rowcount > 0: #records already exist. No need to update
+    return
+  #Database loader
   with open("database.dat", "rb") as file:
-    cols = {"flights": 6, "booked": 3, "userdata": 4}
-    for table_name, cols in cols.items():
-      data = pickle.load(file)
-      for item in data:
-        print(item)
-        print(f"INSERT INTO {table_name} VALUES (" + ('%s, ' * cols)[:-2], ");")
-        sql.execute(f"INSERT INTO {table_name} VALUES (" + ('%s, ' * cols)[:-2], ");", item)  # ignore last comma
-      db.commit()
-      print(f"Uploaded {table_name} data")
+    # FOR TABLE flights
+    data = pickle.load(file)
+    for item in data:
+      sql.execute(f"INSERT INTO flights VALUES (%s, %s, %s, %s, %s, %s);", item)
+    db.commit()
+    print(f"Uploaded flights table")
+
+    # FOR TABLE booked
+    data = pickle.load(file)
+    for item in data:
+      sql.execute(f"INSERT INTO booked VALUES (%s, %s, %s);", item)
+    db.commit()
+    print(f"Uploaded booked table")
+
+    # FOR TABLE userdata
+    data = pickle.load(file)
+    for item in data:
+      sql.execute(f"INSERT INTO userdata VALUES (%s, %s, %s, %s);", item)
+    db.commit()
+    print(f"Uploaded userdata table")
 
   db.close()
 
-setup()
 """
 Setup SQL queries:
 
@@ -74,18 +87,7 @@ db = mysql.connector.connect(
   autocommit = True  # fix planetscale bug
 )
 sql = db.cursor()
-"""
-import time
-print("started")
-#sql.execute("UPDATE flights SET from_city = 'lol' WHERE from_city = 'lop';")
-sql.execute("SELECT * FROM flights;")
-#db.commit()
-x=sql.fetchall()
-time.sleep(21)
-sql.execute("SELECT id FROM flights;")
-#x=sql.fetchall()
-print("No errors ")
-exit()#"""
+
 
 
 def get_flights(from_city = None, to_city = None, flight_id = None):
@@ -121,7 +123,7 @@ def generate_id(column = None, table = None):
 
 
   
-def userinput():
+'''def userinput():
   print("Cities we connect:")
   from_options = get_flights()
   for item in from_options:
@@ -160,7 +162,7 @@ def userinput():
   flight_data2 = get_flights(flight_id = flightID2)
   return flight_data1, flight_data2
 
-  #CHECK THE ENTIRE FUNCTION ABOVE!!!
+  #CHECK THE ENTIRE FUNCTION ABOVE!!!'''
     
                     
 
@@ -168,7 +170,7 @@ def userinput():
 
 
   
-  '''print(f"All flights travelling to {dest} from {home}:")
+'''print(f"All flights travelling to {dest} from {home}:")
   print(get_flights(to_city = dest, from_city = home))
   print("\n")
   print('Here are all the destinations connected to your location: ')
@@ -192,44 +194,65 @@ def userinput():
   sql.execute('SELECT * FROM flights WHERE from_city=%s AND to_city=%s;',(home,dest))
   OneFlight = sql.fetchall()
   help = 0
-  if not OneFlight:
+  #WIP - 1 hop fight AKA TwoFlight
+  if not OneFlight: #Just Oneflight - returns False if it is a list of empty tuples
     help = 1
-    journey = list()
-    sql.execute('SELECT to_city, id, departure, arrival FROM flights WHERE from_city = %s;',(home,))
-    layer1 = sql.fetchall() #list of tuples
+    TwoFlight = list()
+    sql.execute('SELECT to_city, id, departure, arrival,from_city FROM flights WHERE from_city = %s;',(home,))
+    layer1 = sql.fetchall()
+
     index = 0
     for i in layer1:
-      sql.execute('SELECT to_city, id, departure, arrival FROM flights WHERE from_city = %s AND arrival>%s;',(i[0],i[2]))# A-B  B-C C-
+      sql.execute('SELECT to_city, id, departure, arrival,from_city FROM flights WHERE from_city = %s AND arrival>%s AND to_city = %s;',(i[0],i[2],dest))
       layer2 = sql.fetchall()
       for j in layer2:
-        sql.execute('SELECT id, arrival, departure, from_city,to_city FROM flights WHERE from_city = %s AND to_city = %s AND arrival>%s;',(j[0],dest,j[2]))
-        layer3 = sql.fetchall()
-        for k in layer3:
-          journey.append((index,home,i[0],j[0],dest,i[3],j[2],i[1],j[1]))
-          index += 1
-  #Check for 1 flight, 2 flight. (above code is for 3!)
-    for item in journey:
-      print(item)
+        TwoFlight.append((index,home,i[0],dest,i[2],j[2],j[3],i[1],j[1]))
+        index += 1
+    if TwoFlight:      #Just Twoflight - returns False if it is a list of empty tuples
+      for item in TwoFlight:
+        print(item[0:7])
+    else:    
+      help = 2
+      journey = list()
+      sql.execute('SELECT to_city, id, departure, arrival FROM flights WHERE from_city = %s;',(home,))
+      layer1 = sql.fetchall() #list of tuples
+      index = 0
+      for i in layer1:
+        sql.execute('SELECT to_city, id, departure, arrival FROM flights WHERE from_city = %s AND arrival>%s;',(i[0],i[2]))# A-B  B-C C-
+        layer2 = sql.fetchall()
+        for j in layer2:
+          sql.execute('SELECT id, arrival, departure, from_city,to_city FROM flights WHERE from_city = %s AND to_city = %s AND arrival>%s;',(j[0],dest,j[2]))
+          layer3 = sql.fetchall()
+          for k in layer3:
+            journey.append((index,home,i[0],j[0],dest,i[3],j[2],i[1],j[1]))
+            index += 1
+    #Check for 1 flight, 2 flight. (above code is for 3!)
+      for item in journey:
+        print(item)
   else:
     for num,item in enumerate(OneFlight):
       print(num,item)
 
   option = int(input('Enter your desired flight\'s index: '))
-  if help == 1:
+  if help == 2:
     print(get_flights(flight_id = journey[option][7]),get_flights(flight_id = journey[option][8]))
     return get_flights(flight_id = journey[option][7]),get_flights(flight_id = journey[option][8])
+  elif help == 1:
+    print(get_flights(flight_id = TwoFlight[option][7]),get_flights(flight_id = TwoFlight[option][8]))
+    return get_flights(flight_id = TwoFlight[option][7]),get_flights(flight_id = TwoFlight[option][8])  
   else:
     return OneFlight[option]
 
 def display_flight(flight):
-  print(f'''
-----------------------------------------------------------------------------------------------------------------------------------------------
-  Flight ID : {flight[0]}
-  Name of flight : {flight[3]}
-  From {flight[1]} to {flight[2]}
-  Time of departure : {flight[5]}
-  Time of arrival : {flight[4]} 
----------------------------------------------------------------------------------------------------------------------------------------------''') 
+  for item in flight:
+    print(f'''
+  ----------------------------------------------------------------------------------------------------------------------------------------------
+    Flight ID : {flight[0]}
+    Name of flight : {flight[3]}
+    From {flight[1]} to {flight[2]}
+    Time of departure : {flight[5]}
+    Time of arrival : {flight[4]} 
+  ---------------------------------------------------------------------------------------------------------------------------------------------''') 
 
 def display_tickets(user):
   sql.execute("SELECT * FROM booked WHERE userid = %s;", (user,))
@@ -331,8 +354,9 @@ def authenticate(): # change func name
       print("Invalid option.")
       continue
     return user_id
-  
 
+
+#setup() #sets up and load database
 a = 0
 user = None
 while a != 5:
