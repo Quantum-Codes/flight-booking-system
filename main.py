@@ -1,5 +1,4 @@
 # AIRLINES. NOT AIRPORT
-#TEST HYDERABAD TO PARIS! (hop flight). Direct flight booking works in the 1 tested case.
 
 import mysql.connector, os, random, pickle
 
@@ -121,69 +120,6 @@ def generate_id(column = None, table = None):
       break
   return temp_id 
 
-
-  
-'''def userinput():
-  print("Cities we connect:")
-  from_options = get_flights()
-  for item in from_options:
-    print('>> ',item[0].title())
-  home = input('Enter your city: ').lower().strip()
-  dest = input('Enter your desired destination: ').lower().strip()
-  #CHECK THIS PIECE OF ***** CODE!
-  journey = []
-  if not get_flights(from_city = home, to_city=dest): # if direct flight not available
-    available = get_flights(from_city = home)
-    print(available )
-    for i1, item1 in enumerate([item[1] for item in available]): # iterate over from_cities
-      central = sql.execute('SELECT * FROM flights WHERE from_city = %s AND departure >= %s;',(item1[2], item1[4])) # from_city(central) = to_city(home)
-      print(central)
-      for i2, item2 in enumerate([item[1] for item in central]): # iterate over from_cities
-        final = sql.execute('SELECT * FROM flights WHERE from_city = %s AND departure >= %s;',(item2[2], item2[4])) # from_city(final) = to_city(central)
-        if not final:
-          pass # if no flight exist
-        else:
-          for i in final[0]: # flight exist
-            journey.append(item1[0], item2[0]) #[flight id of flight1 and 2]
-  else:
-    journey = get_flights(from_city = home, to_city=dest)
-  #CHECK ABOVE ***** CODE
-  print(journey)
-  for item in journey:
-    print('>>', get_flights(flight_id = item[0])[0])
-    if len(item) == 2: # if connecting flight exists
-      print('  ', get_flights(flight_id = item[1])[0])
-  print()
-  
-  flightID1 = int(input('Through which initial flight do you want to go to your destination. Enter the ID ').strip())
-  flightID2 = int(input('Through which final flight do you want to reach your destination. Enter the ID ').strip())
-
-  flight_data1 = get_flights(flight_id = flightID1)
-  flight_data2 = get_flights(flight_id = flightID2)
-  return flight_data1, flight_data2
-
-  #CHECK THE ENTIRE FUNCTION ABOVE!!!'''
-    
-                    
-
-    
-
-
-  
-'''print(f"All flights travelling to {dest} from {home}:")
-  print(get_flights(to_city = dest, from_city = home))
-  print("\n")
-  print('Here are all the destinations connected to your location: ')
-  to_options = get_flights(from_city = home)
-  for item in to_options:
-    print('>> ',item[0].title())
-
-  print()
-  flightID = int(input('Please select the flight id of the plane you want to board in: ').strip())
-  
-  flight_data = get_flights(flight_id = flightID)
-  return flight_data #tuple'''
-
 def userinput():
   print("Cities we connect:")
   from_options = get_flights()
@@ -241,7 +177,7 @@ def userinput():
     print(get_flights(flight_id = TwoFlight[option][7]),get_flights(flight_id = TwoFlight[option][8]))
     return get_flights(flight_id = TwoFlight[option][7]),get_flights(flight_id = TwoFlight[option][8])  
   else:
-    return OneFlight[option]
+    return [OneFlight[option]] #function returns list of flights even if only 1 flight
 
 def display_flight(flight):
   for item in flight:
