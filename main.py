@@ -245,13 +245,14 @@ def userinput():
 
 def display_flight(flight):
   for item in flight:
+    print(flight)
     print(f'''
   ----------------------------------------------------------------------------------------------------------------------------------------------
-    Flight ID : {flight[0]}
-    Name of flight : {flight[3]}
-    From {flight[1]} to {flight[2]}
-    Time of departure : {flight[5]}
-    Time of arrival : {flight[4]} 
+    Flight ID : {item[0]}
+    Name of flight : {item[3]}
+    From {item[1]} to {item[2]}
+    Time of departure : {item[5]}
+    Time of arrival : {item[4]} 
   ---------------------------------------------------------------------------------------------------------------------------------------------''') 
 
 def display_tickets(user):
@@ -260,9 +261,10 @@ def display_tickets(user):
   print("Your booked flights:")
   if len(tickets) == 0:
     print("You have not booked any tickets.")
+    
+  print("TicketID", "FlightID", "Plane   ", "Departure \t\t", "Arrival", sep = "\t")
   for item in tickets:
     flight = get_flights(flight_id = item[2])
-    print("TicketID", "FlightID", "Plane   ", "Departure \t\t", "Arrival", sep = "\t")
     print(item[0], flight[0], flight[3], flight[5], flight[4], sep = "\t")
 
 def payment(flight, user):
@@ -285,15 +287,18 @@ def payment(flight, user):
     pin = int(input('Your pin: '))
  
 
-  ticket_id = generate_id("id", "booked")
-  sql.execute("INSERT INTO booked (id, userid, flightid) VALUES (%s, %s, %s);", (ticket_id, user, flight[0]))
+  ticket_ids = []
+  for item in flight:
+    ticket_id = generate_id("id", "booked")
+    sql.execute("INSERT INTO booked (id, userid, flightid) VALUES (%s, %s, %s);", (ticket_id, user, item[0]))
+    ticket_ids.append(ticket_id)
   db.commit()
   print("Payment Successful.")
-  print("Ticket id:", ticket_id)
+  print("Ticket id:", ticket_ids)
 
 
 def cancel(user):
-  flightid = input('Flight ID to cancel: ').strip()
+  flightid = input('Ticket ID to cancel: ').strip()
   sql.execute('DELETE FROM booked WHERE id = %s AND userid = %s;',(flightid, user))
   db.commit()
   print('Your flight has been successfully cancelled.')
