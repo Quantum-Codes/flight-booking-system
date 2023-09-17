@@ -110,12 +110,12 @@ def get_flights(from_city = None, to_city = None, flight_id = None):
 
 
 def generate_id(column = None, table = None):
-  temp_id = random.randint(0,1E8) # 1*10^10 - 10 digits
+  temp_id = random.randint(1E7, 1E8) # 1*10^7 - 8 digits
   while True: # duplicate checking
     sql.execute(f"SELECT {column} FROM {table};")
     existing_id = sql.fetchall()
     if temp_id in existing_id:
-      temp_id = random.randint(0,1E10)
+      temp_id = random.randint(1E7, 1E8)
     else:
       break
   return temp_id 
@@ -181,7 +181,6 @@ def userinput():
 
 def display_flight(flight):
   for item in flight:
-    print(flight)
     print(f'''
   ----------------------------------------------------------------------------------------------------------------------------------------------
     Flight ID : {item[0]}
@@ -197,11 +196,12 @@ def display_tickets(user):
   print("Your booked flights:")
   if len(tickets) == 0:
     print("You have not booked any tickets.")
+    return
     
   print("TicketID", "FlightID", "Plane   ", "Departure \t\t", "Arrival", sep = "\t")
   for item in tickets:
     flight = get_flights(flight_id = item[2])
-    print(item[0], flight[0], flight[3], flight[5], flight[4], sep = "\t")
+    print(item[0], flight[0], flight[3], str(flight[5]), str(flight[4]), sep = "\t")
 
 def payment(flight, user):
   os.system("clear")
@@ -234,8 +234,12 @@ def payment(flight, user):
 
 
 def cancel(user):
-  flightid = input('Ticket ID to cancel: ').strip()
-  sql.execute('DELETE FROM booked WHERE id = %s AND userid = %s;',(flightid, user))
+  ticketid = input('Ticket ID to cancel: ').strip()
+  sql.execute('SELECT * FROM booked WHERE id = %s;', (ticketid,))
+  if not sql.fetchone():
+    print("Ticket doesn't exist.")
+    return
+  sql.execute('DELETE FROM booked WHERE id = %s AND userid = %s;',(ticketid, user))
   db.commit()
   print('Your flight has been successfully cancelled.')
 
@@ -249,7 +253,7 @@ def signup():
     print('User already exists')
     return 
   age = input('Provide your age: ')
-  if not age.isdigit() and int(age) < 0:
+  if not age.isdigit() or int(age) < 0:
     return
   pass1 = "a"
   pass2 = "b"
@@ -258,6 +262,8 @@ def signup():
     pass2 = input('Confirm your password').strip()
   sql.execute('INSERT INTO userdata (id,name,age,password) VALUES (%s,%s,%s,%s);',(user_id, name, age, pass1))
   db.commit()
+  print()
+  print('Signed up successfully')
   return user_id
 
 def login():
@@ -321,8 +327,10 @@ while a != 5:
   if a == 1:
     sql.execute("SELECT * FROM flights;")
     allflights = sql.fetchall()
+    print("FlightID", "Plane   ","Flying from", "   Flying to  ", "  Departure"+ "  Arrival", sep = "\t")
     for item in allflights:
-      print(item)
+      flight = get_flights(flight_id = item[0])
+      print(item[0],"\t", item[3],"\t", item[1],' '*(15-len(item[1])), item[2],' '*(15-len(item[2])), str(item[5]),' '*(11-len(str(item[5]))), str(item[4]), sep = "")
   elif a == 2:
     flight = userinput()
     payment(flight, user)
