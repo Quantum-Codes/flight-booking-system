@@ -11,9 +11,10 @@ sql = db.cursor()
 
 with open("database.dat", "wb") as file:
   for i in ("flights", "booked", "userdata"):
-    sql.execute(f"SELECT * FROM {i}")
+    sql.execute(f"SELECT * FROM {i};")
     data = sql.fetchall()
     pickle.dump(data, file)
   file.flush()
+  print("data saved")
 
 db.close()
