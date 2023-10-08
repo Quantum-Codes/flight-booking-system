@@ -120,7 +120,7 @@ def generate_id(column = None, table = None):
       break
   return temp_id 
 
-def userinput():
+def book_flight():
   print("Cities we connect:")
   from_options = get_flights()
   for item in from_options:
@@ -130,23 +130,23 @@ def userinput():
   sql.execute('SELECT * FROM flights WHERE from_city=%s AND to_city=%s;',(home,dest))
   OneFlight = sql.fetchall()
   help = 0
-  #WIP - 1 hop fight AKA TwoFlight
   if not OneFlight: #Just Oneflight - returns False if it is a list of empty tuples
     help = 1
-    TwoFlight = list()
+    TwoFlight = []
     sql.execute('SELECT to_city, id, departure, arrival,from_city FROM flights WHERE from_city = %s;',(home,))
     layer1 = sql.fetchall()
-
+    #Layer1 = all flight with start location as current city. Doesnt necessarily directly connect to destination
     index = 0
     for i in layer1:
       sql.execute('SELECT to_city, id, departure, arrival,from_city FROM flights WHERE from_city = %s AND arrival>%s AND to_city = %s;',(i[0],i[2],dest))
       layer2 = sql.fetchall()
+      #Layer 2 = all flights starting from destination of Layer1 flights connecting the final destination.
       for j in layer2:
         TwoFlight.append((index,home,i[0],dest,i[2],j[2],j[3],i[1],j[1]))
         index += 1
     if TwoFlight:      #Just Twoflight - returns False if it is a list of empty tuples
       for item in TwoFlight:
-        print(item[0:7])
+        print(list(item[0:4]) + [str(item[4]), str(item[5]), str(item[6])], "single hop")
     else:    
       help = 2
       journey = list()
@@ -164,10 +164,10 @@ def userinput():
             index += 1
     #Check for 1 flight, 2 flight. (above code is for 3!)
       for item in journey:
-        print(item)
+        print(list(item[:5]) + [str(item[5]), str(item[6])], "double hop")
   else:
     for num,item in enumerate(OneFlight):
-      print(num,item)
+      print(num, list(item[:2]) + [str(item[-2]), str(item[-1])], "direct flight")
 
   option = int(input('Enter your desired flight\'s index: '))
   if help == 2:
@@ -198,10 +198,10 @@ def display_tickets(user):
     print("You have not booked any tickets.")
     return
     
-  print("TicketID", "FlightID", "Plane   ", "Departure \t\t", "Arrival", sep = "\t")
+  print("TicketID", "FlightID", "Plane",' '*3, "   Departure"+'   '+"Arrival", sep = "\t")
   for item in tickets:
     flight = get_flights(flight_id = item[2])
-    print(item[0],'\t', flight[0],'\t', flight[3],'\t', str(flight[5]),' '*(12+(8-len(str(flight[5])), str(flight[4]), sep = '')
+    print(item[0],'\t', flight[0],'\t', flight[3],'\t',' '*3, str(flight[5]),' '*(4+(8-len(str(flight[5])))), str(flight[4]), sep = '')
 
 def payment(flight, user):
   os.system("clear")
@@ -332,7 +332,7 @@ while a != 5:
       flight = get_flights(flight_id = item[0])
       print(item[0],"\t", item[3],"\t", item[1],' '*(15-len(item[1])), item[2],' '*(15-len(item[2])), str(item[5]),' '*(11-len(str(item[5]))), str(item[4]), sep = "")
   elif a == 2:
-    flight = userinput()
+    flight = book_flight()
     payment(flight, user)
   
   elif a == 3:
