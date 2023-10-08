@@ -201,7 +201,7 @@ def display_tickets(user):
   print("TicketID", "FlightID", "Plane   ", "Departure \t\t", "Arrival", sep = "\t")
   for item in tickets:
     flight = get_flights(flight_id = item[2])
-    print(item[0], flight[0], flight[3], str(flight[5]), str(flight[4]), sep = "\t")
+    print(item[0],'\t', flight[0],'\t', flight[3],'\t', str(flight[5]),' '*(12+(8-len(str(flight[5])), str(flight[4]), sep = '')
 
 def payment(flight, user):
   os.system("clear")
