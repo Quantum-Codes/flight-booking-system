@@ -36,9 +36,27 @@ just my school project
 ### Option 2:
 
   **DIRECT FLIGHT:**
+![Screenshot 2023-11-10 133719](https://github.com/Quantum-Codes/flight-booking-system/assets/87054411/35719c34-84cd-4fc3-b5a8-7ca3986705c3)
+![Screenshot 2023-11-10 133739](https://github.com/Quantum-Codes/flight-booking-system/assets/87054411/dc0ee4c0-bdc6-43d4-b52c-784cadf66479)
 
   **2 HOP:**
+![Screenshot 2023-11-10 133955](https://github.com/Quantum-Codes/flight-booking-system/assets/87054411/adbfad97-6fc3-403c-8fa0-bcada2478f8f)
+![Screenshot 2023-11-10 134458](https://github.com/Quantum-Codes/flight-booking-system/assets/87054411/96faf0f7-3ba0-4703-930d-367e459a920f)
 
   **3 HOP:**
+![Screenshot 2023-11-10 134654](https://github.com/Quantum-Codes/flight-booking-system/assets/87054411/aba9b324-1690-49b2-9270-f76c7521fa20)
+![Screenshot 2023-11-10 134715](https://github.com/Quantum-Codes/flight-booking-system/assets/87054411/8e507e1c-4f5e-44b3-99d2-88d15ecd73e0)
 
+  **NO FLIGHT:**
+  ![Screenshot 2023-11-10 122635](https://github.com/Quantum-Codes/flight-booking-system/assets/87054411/ba7fd038-3310-44d3-96b1-6780d8c7e85f)
+
+
+## Option 3+4:
+![Screenshot 2023-11-10 135023](https://github.com/Quantum-Codes/flight-booking-system/assets/87054411/0ca1f4df-8f1e-4f16-925a-27bf60727f5b)
+
+*Checking if really cancelled*
+![Screenshot 2023-11-10 135043](https://github.com/Quantum-Codes/flight-booking-system/assets/87054411/3dd59ca9-f1fb-4932-b630-dd01208a12a8)
+
+## Option 5:
+![Screenshot 2023-11-10 135043](https://github.com/Quantum-Codes/flight-booking-system/assets/87054411/794e0303-cc37-4c78-99ea-2644b4c83c6a)
 
