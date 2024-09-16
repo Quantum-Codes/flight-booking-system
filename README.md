@@ -1,5 +1,4 @@
-Nothing to see here
-just my school project
+my 12th class school project
 
 # Display
 
